@@ -1,20 +1,76 @@
-import $ from 'jquery';
-import handlers from './modules/handlers';
-import msg from './modules/msg';
+(() => {
+  let toastElement;
+  let toastTimeout;
+  const toast = (text) => {
+    if (!toastElement) {
+      toastElement = document.createElement('div');
+      toastElement.style.backgroundColor = '#33333333';
+      toastElement.style.position = 'fixed';
+      toastElement.style.color = 'white';
+      toastElement.style.zIndex = '20000';
+      toastElement.style.top = '30px';
+      toastElement.style.left = '50%';
+      toastElement.style.fontSize = '30px';
+      toastElement.style.padding = '2px 4px';
+      toastElement.append('ha');
+      toastElement.appendChild(document.createTextNode(''));
+      document.body.appendChild(toastElement);
+    }
 
-// here we use SHARED message handlers, so all the contexts support the same
-// commands. but this is NOT typical messaging system usage, since you usually
-// want each context to handle different commands. for this you don't need
-// handlers factory as used below. simply create individual `handlers` object
-// for each context and pass it to msg.init() call. in case you don't need the
-// context to support any commands, but want the context to cooperate with the
-// rest of the extension via messaging system (you want to know when new
-// instance of given context is created / destroyed, or you want to be able to
-// issue command requests from this context), you may simply omit the
-// `handlers` parameter for good when invoking msg.init()
+    toastTimeout && clearTimeout(toastTimeout);
+    toastElement.firstChild.textContent = text;
+    toastElement.style.visibility = 'visible';
+    toastTimeout = setTimeout(() => {
+      toastElement.style.visibility = 'hidden';
+    }, 1000);
 
-console.log('CONTENT SCRIPT WORKS!'); // eslint-disable-line no-console
+    chrome.runtime.sendMessage('anfhlgmaegobggmeggdmpiegnfgkcack', {
+      action: 'setBadgeText',
+      content: { text: text.toString() },
+    });
+  };
 
-msg.init('ct', handlers.create('ct'));
+  // keep playback rate
+  let playbackRate = undefined;
+  setInterval(() => {
+    if (playbackRate) {
+      document.getElementsByTagName('video')[0].playbackRate = playbackRate;
+    }
+  }, 100);
 
-console.log('jQuery version:', $().jquery); // eslint-disable-line no-console
+  const setPlaybackRate = (pr) => {
+    playbackRate = pr;
+    toast(pr);
+    console.log('video.playbackRate', playbackRate);
+  }
+
+  // add keyboard listener to video player element
+  const interval = setInterval(() => {
+    const ele = document.getElementsByClassName('player-mnc')[0];
+    if (!ele) {
+      return;
+    }
+    clearInterval(interval);
+    ele.addEventListener('keyup', (event) => {
+      if (!event) {
+        return;
+      }
+      if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
+        playbackRate = playbackRate || 1;
+        if (event.key === 'ArrowDown') {
+          setPlaybackRate(playbackRate - 0.5);
+        } else if (event.key === 'ArrowUp') {
+          setPlaybackRate(playbackRate + 0.5);
+        }
+      }
+    });
+
+    document.body.addEventListener('keyup', (event) => {
+      const nn = parseInt(event.key, 10);
+      if (!isNaN(nn)) {
+        setPlaybackRate(nn);
+      }
+    });
+    console.log('[starfish] mounted on', ele);
+  }, 1000);
+})();

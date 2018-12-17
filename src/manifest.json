@@ -10,21 +10,24 @@
   "background": {
     "scripts": [
       "js/background.js"
+    ],
+    "persistent": false
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://www.iqiyi.com/*"
     ]
   },
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "https://www.iqiyi.com/*"
       ],
       "js": [
         "js/content.js"
       ]
     }
   ],
-  "options_page": "html/options.html",
-  "devtools_page": "html/devtools.html",
   "permissions": [
     "<all_urls>"
   ],
