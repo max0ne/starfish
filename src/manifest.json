@@ -8,35 +8,20 @@
     "default_popup": "html/popup.html"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
   "externally_connectable": {
-    "matches": [
-      "https://www.iqiyi.com/*"
-    ]
+    "matches": ["https://www.iqiyi.com/*", "https://www.netflix.com/*"]
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://www.iqiyi.com/*"
-      ],
-      "js": [
-        "js/content.js"
-      ]
+      "matches": ["https://www.iqiyi.com/*"],
+      "js": ["js/content.js"]
     }
   ],
-  "permissions": [
-    "<all_urls>"
-  ],
-  "web_accessible_resources": [
-    "js/*",
-    "html/*",
-    "css/*",
-    "images/*"
-  ],
+  "permissions": ["<all_urls>"],
+  "web_accessible_resources": ["js/*", "html/*", "css/*", "images/*"],
   "content_security_policy": "script-src 'self'; object-src 'self'",
   "name": "<%= package.name %>",
   "version": "<%= package.version %>",

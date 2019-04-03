@@ -4,7 +4,7 @@
   const toast = (text) => {
     if (!toastElement) {
       toastElement = document.createElement('div');
-      toastElement.style.backgroundColor = '#33333333';
+      toastElement.style.backgroundColor = '#fff8';
       toastElement.style.position = 'fixed';
       toastElement.style.color = 'white';
       toastElement.style.zIndex = '20000';
